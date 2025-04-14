@@ -14,6 +14,7 @@ export const getAllContactController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = parseFilterParams(req.query);
+  const userId = req.user._id;
 
   const contacts = await allContacts({
     page,
@@ -21,6 +22,7 @@ export const getAllContactController = async (req, res) => {
     sortBy,
     sortOrder,
     filter,
+    userId,
   });
 
   res.status(200).json({
@@ -33,7 +35,9 @@ export const getAllContactController = async (req, res) => {
 export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
 
-  const contacts = await oneContactForId(contactId);
+  const userId = req.user._id;
+
+  const contacts = await oneContactForId({ contactId, userId });
 
   if (!contacts) {
     throw createHttpError(404, 'Contact not found');
@@ -47,7 +51,9 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const newContactController = async (req, res) => {
-  const data = await createContact(req.body);
+  const userId = req.user._id;
+
+  const data = await createContact({ ...req.body, userId });
 
   res.status(201).json({
     status: 201,
@@ -58,8 +64,9 @@ export const newContactController = async (req, res) => {
 
 export const updateContactController = async (req, res) => {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const data = await updateContactForId(contactId, req.body);
+  const data = await updateContactForId(contactId, req.body, userId);
 
   if (!data) {
     throw createHttpError(404, 'Contact not found');
@@ -74,8 +81,9 @@ export const updateContactController = async (req, res) => {
 
 export const deleteContactController = async (req, res) => {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const data = await deleteContactForId(contactId);
+  const data = await deleteContactForId(contactId, userId);
 
   if (!data) {
     throw createHttpError(404, 'Contact not found');
