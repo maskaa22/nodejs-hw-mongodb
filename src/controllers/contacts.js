@@ -61,7 +61,11 @@ export const newContactController = async (req, res) => {
   let photoUrl;
 
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    if (getEnvVar(ENABLE_CLOUDINARY) === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
 
   const data = await createContact({ ...req.body, userId, photo: photoUrl });
@@ -82,18 +86,12 @@ export const updateContactController = async (req, res) => {
   let photoUrl;
 
   if (photo) {
-    console.log('0000');
 
     if (getEnvVar(ENABLE_CLOUDINARY) === 'true') {
-      console.log(1111);
-
       photoUrl = await saveFileToCloudinary(photo);
     } else {
-      console.log(3333);
-
       photoUrl = await saveFileToUploadDir(photo);
     }
-    console.log(4444);
   }
 
   const data = await updateContactForId(
