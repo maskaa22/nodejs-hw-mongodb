@@ -55,6 +55,7 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const newContactController = async (req, res) => {
+  
   const userId = req.user._id;
   const photo = req.file;
 
