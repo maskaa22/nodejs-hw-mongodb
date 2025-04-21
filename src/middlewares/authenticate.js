@@ -18,6 +18,7 @@ export const authenticate = async (req, res, next) => {
     return;
   }
 
+
   const session = await SessionCollection.findOne({ accessToken });
 
   if (!session) {
